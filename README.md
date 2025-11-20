@@ -60,10 +60,10 @@ Quels sont les facteurs individuels et combinés qui influencent le plus la grav
 
 ### 3️⃣ Insight Layer
 **Dashboard & Analyses :**  
-- Power BI / Tableau / Grafana  
+- Power BI 
 - Heatmaps géolocalisées, séries temporelles, analyse par facteurs humains, climatiques et routiers  
 
-**Machine Learning (optionnel) :**  
+**Machine Learning :**  
 - Random Forest / XGBoost pour prédiction de la gravité  
 - SHAP values pour expliquer les facteurs influents  
 
