@@ -109,6 +109,9 @@ data/
 ### ✔ Fusion des fichiers annuels FARS (2010–2022)
 
 → Script `merge_accident.py`
+→ Script `merge_person.py`
+→ Script `merge_vehicle.py`
+→ Script `silver_merge_all.py`
 
 ### ✔ Nettoyage des colonnes, normalisation, typage
 
@@ -128,9 +131,8 @@ data/
 
 ```
 ACCIDENT_2010_2022_cleaned.parquet
-NOAA_MASTER_US.parquet
-ACCIDENT_WEATHER_YEARLY.parquet
-```
+ACCIDENT_WITH_NEAREST_Station.parquet
+NOAA_ALL_2010_2022_raw.parquet
 
 ---
 
@@ -171,12 +173,10 @@ GOLD_FEATURES.parquet
 Puis création d’un dataset **optimisé Power BI** :
 
 ```
-GOLD_FEATURES_LIGHT.csv
-ou
 GOLD_FEATURES_LIGHT.parquet
+et
+complement_data.csv
 ```
-
----
 
 # 📊 **7. Insights & Dashboard Power BI**
 
