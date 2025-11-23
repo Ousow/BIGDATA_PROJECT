@@ -4,7 +4,7 @@
 
 ---
 
-# 📌 **1. Objectif du projet**
+# **1. Objectif du projet**
 
 Ce projet consiste à concevoir **une architecture complète de Data Lake** permettant :
 
@@ -16,7 +16,7 @@ Ce projet consiste à concevoir **une architecture complète de Data Lake** perm
 
 ---
 
-# 📂 **2. Sources de données utilisées**
+# **2. Sources de données utilisées**
 
 Deux sources principales, de formats différents :
 
@@ -38,7 +38,7 @@ Deux sources principales, de formats différents :
 
 ---
 
-# 🏗️ **3. Architecture Big Data (Data Lake)**
+# **3. Architecture Big Data (Data Lake)**
 
 Le projet suit l’architecture standard **Raw → Silver → Gold → Insight**.
 
@@ -73,7 +73,7 @@ Le projet suit l’architecture standard **Raw → Silver → Gold → Insight**
 
 ---
 
-# 🚀 **4. Ingestion (Batch & Résiliente)**
+# **4. Ingestion (Batch & Résiliente)**
 
 ✔ Téléchargement des archives FARS pour 2010–2022
 ✔ Extraction automatisée des ZIP
@@ -96,7 +96,7 @@ data/
 
 ---
 
-# 🔧 **5. Persistance & ETL (Silver Layer)**
+# **5. Persistance & ETL (Silver Layer)**
 
 ### ✔ Scripts de fusion (Accident / Vehicle / Person)
 
@@ -140,31 +140,31 @@ NOAA_ALL_2010_2022_raw.parquet
 
 ---
 
-# 🟡 **6. Feature Engineering (Gold Layer)**
+# **6. Feature Engineering (Gold Layer)**
 
 Création de variables explicatives essentielles :
 
-### 🌙 Luminosité
+### Luminosité
 
 * `LIGHT_COND` (day / night)
 
-### 🛣️ Type de route
+### Type de route
 
 * `ROUTE_TYPE` (interstate / urban / rural…)
 
-### 🚗 Type de véhicule
+### Type de véhicule
 
 * `VEHICLE_TYPE` (car / SUV / truck / motorcycle…)
 
-### 💥 Type de collision
+### Type de collision
 
 * `COLLISION_TYPE` (frontale / latérale / piéton…)
 
-### 🗺️ Zone géographique
+### Zone géographique
 
 * `AREA_TYPE` (urban / rural)
 
-### 🎯 Variable cible
+### Variable cible
 
 * `severity` (3 niveaux)
 
@@ -183,13 +183,13 @@ complement_data.csv
 
 ---
 
-# 📊 **7. Insights & Dashboard Power BI**
+# **7. Insights & Dashboard Power BI**
 
 Dashboard structuré en **4 pages**.
 
 ---
 
-## 🟦 PAGE 1 — Overview
+## PAGE 1 — Overview
 
 * KPIs globaux
 * Total accidents / accidents mortels
@@ -198,7 +198,7 @@ Dashboard structuré en **4 pages**.
 
 ---
 
-## 🟩 PAGE 2 — Analyses temporelles
+## PAGE 2 — Analyses temporelles
 
 * Fatalités par heure de la journée
 * Répartition Day vs Night
@@ -206,7 +206,7 @@ Dashboard structuré en **4 pages**.
 
 ---
 
-## 🟧 PAGE 3 — Facteurs structurels (Insights clés)
+## PAGE 3 — Facteurs structurels (Insights clés)
 
 Analyses essentielles :
 
@@ -219,7 +219,7 @@ Analyses essentielles :
 
 ---
 
-## 🟨 PAGE 4 — Facteurs météo
+## PAGE 4 — Facteurs météo
 
 * % accidents sous pluie/neige
 * TMAX/TMIN vs gravité (ribbon chart)
@@ -230,9 +230,9 @@ Analyses essentielles :
 
 ---
 
-# 🧠 **8. Résultats & Conclusions**
+# **8. Résultats & Conclusions**
 
-### ❌ La météo influence très faiblement :
+### La météo influence très faiblement :
 
 * <0,05% des accidents ont pluie/neige
 * Corrélation quasi nulle avec la gravité
@@ -249,7 +249,7 @@ Conclusions cohérentes avec les rapports FARS.
 
 ---
 
-# 🧩 **Technologies utilisées**
+# **Technologies utilisées**
 
 * Python (Pandas, PyArrow)
 * Power BI Desktop
@@ -260,7 +260,7 @@ Conclusions cohérentes avec les rapports FARS.
 
 ---
 
-# 📎 **Structure du repository GitHub**
+# **Structure du repository GitHub**
 
 ```
 accidents_bigdata/
@@ -283,17 +283,11 @@ accidents_bigdata/
 
 ---
 
-# 🏁 Conclusion
+# Conclusion
 
 Ce projet met en œuvre une architecture Data Lake complète, un pipeline ETL robuste et une analyse approfondie révélant les facteurs clés de la gravité des accidents aux États-Unis.
 Le dashboard Power BI offre une visualisation claire, dynamique et exploitable par une équipe métier ou un comité exécutif.
 
 ---
 
-Si tu veux, je peux aussi :
 
-✅ te générer un **diagramme d’architecture en image**
-✅ écrire un **requirements.txt prêt à l’emploi**
-✅ améliorer le README avec badges GitHub (stars, python version, parquet, etc.)
-
-Veux-tu une version encore plus professionnelle ?
