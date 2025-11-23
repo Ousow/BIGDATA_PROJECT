@@ -1,4 +1,4 @@
-# Big Data Project : U.S. Traffic Accidents Analysis (2010–2022)**
+# **Big Data Project : U.S. Traffic Accidents Analysis (2010–2022)**
 
 **Data Lake – Ingestion, Persistance, Insight & Dashboard Power BI**
 
@@ -12,7 +12,7 @@ Ce projet consiste à concevoir **une architecture complète de Data Lake** perm
 * La persistance et la transformation via un pipeline ETL
 * La production d’un **dashboard interactif Power BI**
 * L’analyse de facteurs expliquant la **gravité des accidents routiers aux États-Unis (2010–2022)**
-* L’intégration de méthodes d'analyse avancées (feature engineering, jointures spatio-temporelles, etc.)
+* L’intégration de méthodes avancées (feature engineering, jointures spatio-temporelles…)
 
 ---
 
@@ -22,25 +22,25 @@ Deux sources principales, de formats différents :
 
 ### **1️⃣ FARS – Fatality Analysis Reporting System (USA – DOT)**
 
-* Données disponibles au format **CSV** compressé (ZIP)
+* Format **CSV** dans des archives ZIP
 * 1 fichier par année (2010–2022)
-* Contient les informations sur les accidents, véhicules, lieux, mortalité…
+* Contient données Accident, Véhicule, Personnes, Lieux…
 
-→ Données historiques volumineuses (Big Data)
+→ Données massives : *plusieurs centaines de millions de lignes cumulées*.
 
 ### **2️⃣ NOAA – Global Historical Climatology Network Daily**
 
-* Source **API / HTTP** en téléchargement direct
+* Source **API / téléchargement direct**
 * Format **TXT & CSV**
-* Données météo journalières (TMAX, TMIN, PRCP, SNOW…)
+* Données météo journalières : TMAX, TMIN, PRCP, SNOW, SNWD…
 
-→ Données météorologiques pour enrichissement externe
+→ Utilisées pour enrichir les accidents avec des conditions météo.
 
 ---
 
 # 🏗️ **3. Architecture Big Data (Data Lake)**
 
-Le projet suit une architecture **Raw → Silver → Gold → Insight**, conforme aux standards Data Engineering.
+Le projet suit l’architecture standard **Raw → Silver → Gold → Insight**.
 
 ```
 ┌─────────────────────────────┐
@@ -61,15 +61,13 @@ Le projet suit une architecture **Raw → Silver → Gold → Insight**, conform
                ▼
 ┌─────────────────────────────┐
 │            GOLD              │
-│ Dataset enrichi :            │
-│ météo + facteurs structurels │
-│ + feature engineering        │
+│ Dataset enrichi : météo +    │
+│ facteurs structurels + FE     │
 └──────────────┬──────────────┘
                ▼
 ┌─────────────────────────────┐
-│         INSIGHT              │
+│           INSIGHT            │
 │ Dashboard Power BI           │
-│ Analyses, visualisations     │
 └─────────────────────────────┘
 ```
 
@@ -77,24 +75,20 @@ Le projet suit une architecture **Raw → Silver → Gold → Insight**, conform
 
 # 🚀 **4. Ingestion (Batch & Résiliente)**
 
-### ✔ Téléchargement manuel + automatisation année par année
+✔ Téléchargement des archives FARS pour 2010–2022
+✔ Extraction automatisée des ZIP
+✔ Téléchargement NOAA + extraction
+✔ Ingestion dans `data/raw/` **sans aucune modification**
+✔ Pipeline résilient (continue même si une année est manquante)
 
-### ✔ Décompression des ZIP automatiquement
-
-### ✔ Ingestion dans `data/raw/`
-
-### ✔ Aucun traitement appliqué aux fichiers bruts
-
-### ✔ Architecture résiliente : si un fichier manque, l’ingestion continue
-
-Exemple de structure :
+Structure :
 
 ```
 data/
  ├── raw/
- │    └── 2010/
- │    └── 2011/
- │    └── ...
+ │    ├── 2010/
+ │    ├── 2011/
+ │    ├── ...
  ├── silver/
  ├── gold/
  └── insight/
@@ -104,159 +98,165 @@ data/
 
 # 🔧 **5. Persistance & ETL (Silver Layer)**
 
-### Étapes effectuées :
+### ✔ Scripts de fusion (Accident / Vehicle / Person)
 
-### ✔ Fusion des fichiers annuels FARS (2010–2022)
+* `merge_accident.py`
+* `merge_vehicle.py`
+* `merge_person.py`
+* `silver_merge_all.py` (fusion complète)
 
-→ Script `merge_accident.py`
-→ Script `merge_person.py`
-→ Script `merge_vehicle.py`
-→ Script `silver_merge_all.py`
+### ✔ Nettoyage du dataset
 
-### ✔ Nettoyage des colonnes, normalisation, typage
+* Uniformisation des colonnes
+* Types & formats
+* Nettoyage des valeurs manquantes
+* Harmonisation Latitude/Longitude
+* Création de colonnes temporelles
 
-* Harmonisation des formats
-* Création des colonnes dates, heures, géolocalisation
-* Gestion des valeurs manquantes
+### ✔ Traitement NOAA
 
-### ✔ Extraction et filtrage des stations NOAA (USA uniquement)
+* Fusion de toutes les stations NOAA 2010–2022
+* Filtre USA uniquement
+* Nettoyage et typage
 
-### ✔ Jointure spatio-temporelle Accidents × Météo
+### ✔ Jointure météo × accidents
 
-* Correspondance par date
-* Station météo la plus proche via distance Haversine
-* Variables météo ajoutées : `TMAX`, `TMIN`, `PRCP`, `SNOW`, `SNWD`
+* Matching **par date**
+* Matching **station la plus proche** (distance Haversine)
+* Ajout des colonnes :
 
-### ✔ Export dans `silver/` :
+  * `TMAX`, `TMIN`
+  * `PRCP`
+  * `SNOW`, `SNWD`
+  * `DIST_TO_STATION_KM`
+
+### ✔ Exports Silver
 
 ```
 ACCIDENT_2010_2022_cleaned.parquet
-ACCIDENT_WITH_NEAREST_Station.parquet
+ACCIDENT_WITH_NEAREST_STATION.parquet
 NOAA_ALL_2010_2022_raw.parquet
+```
 
----
 ---
 
 # 🟡 **6. Feature Engineering (Gold Layer)**
 
 Création de variables explicatives essentielles :
 
-### 🌙 **Conditions de luminosité**
+### 🌙 Luminosité
 
-* LIGHT_COND (day/night)
+* `LIGHT_COND` (day / night)
 
-### 🛣️ **Type de route**
+### 🛣️ Type de route
 
-* ROUTE_TYPE (urban, rural, interstate…)
+* `ROUTE_TYPE` (interstate / urban / rural…)
 
-### 🚗 **Type de véhicule**
+### 🚗 Type de véhicule
 
-* VEHICLE_TYPE (car, SUV, truck, motorcycle…)
+* `VEHICLE_TYPE` (car / SUV / truck / motorcycle…)
 
-### 💥 **Type de collision**
+### 💥 Type de collision
 
-* COLLISION_TYPE (frontale, latérale, piéton, etc.)
+* `COLLISION_TYPE` (frontale / latérale / piéton…)
 
-### 🗺️ **Zone**
+### 🗺️ Zone géographique
 
-* AREA_TYPE (urban / rural)
+* `AREA_TYPE` (urban / rural)
 
-### 👉 Ajout de la variable cible :
+### 🎯 Variable cible
 
-* **severity** (3 niveaux)
+* `severity` (3 niveaux)
 
-Le dataset final :
+**Dataset final GOLD :**
 
 ```
 GOLD_FEATURES.parquet
 ```
 
-Puis création d’un dataset **optimisé Power BI** :
+### Dataset optimisé Power BI :
 
 ```
 GOLD_FEATURES_LIGHT.parquet
-et
 complement_data.csv
 ```
 
+---
+
 # 📊 **7. Insights & Dashboard Power BI**
 
-Le dashboard est organisé en **4 pages professionnelles**.
+Dashboard structuré en **4 pages**.
 
 ---
 
-## 🟦 **PAGE 1 — Overview (KPIs et Vision Globale)**
+## 🟦 PAGE 1 — Overview
 
-* Total accidents
-* Total accidents mortels
+* KPIs globaux
+* Total accidents / accidents mortels
 * Severity distribution
-* Évolution annuelle
+* Courbe d’évolution annuelle
+
 ---
 
-## 🟩 **PAGE 2 — Analyses temporelles**
+## 🟩 PAGE 2 — Analyses temporelles
 
-* Accidents fatales par heure de la journée
-* Day/Night distribution
+* Fatalités par heure de la journée
+* Répartition Day vs Night
 * Accidents par mois
 
 ---
 
-## 🟧 **PAGE 3 — Facteurs structurels (Insights clés)**
+## 🟧 PAGE 3 — Facteurs structurels (Insights clés)
 
-* Sévérité par :
+Analyses essentielles :
 
-  * Type de route
-  * Type de véhicule
-  * Type de collision
-  * Total accidents par type de route
+* Sévérité par type de route
+* Sévérité par type de véhicule
+* Sévérité par type de collision
+* Total accidents par type de route
 
-→ **Les vrais facteurs explicatifs de la sévérité**
+➡️ Mise en évidence des **vrais facteurs explicatifs de la gravité**.
 
 ---
 
-## 🟨 **PAGE 4 — Facteurs météo**
+## 🟨 PAGE 4 — Facteurs météo
 
 * % accidents sous pluie/neige
-* Fatality rate vs météo
-* Graphique de ruban TMAX/TMIN vs Severity
-* PRCP vs Severity
+* TMAX/TMIN vs gravité (ribbon chart)
+* PRCP vs gravité
 
 ➡️ Insight majeur :
-**La météo n’explique presque pas la gravité.**
-La gravité dépend surtout des facteurs structurels.
+**La météo influence très peu la gravité.**
 
 ---
 
 # 🧠 **8. Résultats & Conclusions**
 
-Les analyses montrent que :
+### ❌ La météo influence très faiblement :
 
-### ❌ La météo a un impact très faible
+* <0,05% des accidents ont pluie/neige
+* Corrélation quasi nulle avec la gravité
 
-* <0,05% d’accidents sous pluie/neige
-* Effet quasi nul sur la gravité
+### ✔ Les vrais facteurs explicatifs :
 
-### ✔ Les facteurs *réellement* explicatifs :
+1. Type de route (rurales ≫ risques élevés)
+2. Type de véhicule (motos très mortelles)
+3. Type de collision (frontales critiques)
+4. Conditions nocturnes
+5. Zones rurales (temps d’accès secours)
 
-1. **Type de route** (rural & highway = plus mortels)
-2. **Type de véhicule** (motos ≫ mortalité)
-3. **Type de collision** (frontales mortelles)
-4. **Heure nocturne** (gravité plus élevée la nuit)
-5. **Zone rurale** (accès aux secours plus lent)
-
-Ces conclusions sont cohérentes avec la littérature scientifique FARS.
+Conclusions cohérentes avec les rapports FARS.
 
 ---
 
 # 🧩 **Technologies utilisées**
 
-* **Python** (Pandas, PyArrow)
-* **Power BI Desktop**
-* **Data Lake local (filesystem)**
-* **NOAA + FARS** datasets
-* **Haversine distance** pour matching spatio-temporel
-* **Parquet** (optimisé pour le stockage)
-* **CSV** (optimisé pour Power BI)
+* Python (Pandas, PyArrow)
+* Power BI Desktop
+* NOAA & FARS datasets
+* Haversine distance
+* Parquet (stockage optimisé)
+* CSV (Power BI optimisé)
 
 ---
 
@@ -283,7 +283,17 @@ accidents_bigdata/
 
 ---
 
-# 🏁 **Conclusion**
+# 🏁 Conclusion
 
-Ce projet met en œuvre une architecture Data Lake complète, un pipeline ETL robuste et une analyse approfondie révélant les facteurs clés influençant la gravité des accidents aux États-Unis.
-Le dashboard Power BI permet une exploration interactive et fournit des insights prêts pour un usage décisionnel ou opérationnel.
+Ce projet met en œuvre une architecture Data Lake complète, un pipeline ETL robuste et une analyse approfondie révélant les facteurs clés de la gravité des accidents aux États-Unis.
+Le dashboard Power BI offre une visualisation claire, dynamique et exploitable par une équipe métier ou un comité exécutif.
+
+---
+
+Si tu veux, je peux aussi :
+
+✅ te générer un **diagramme d’architecture en image**
+✅ écrire un **requirements.txt prêt à l’emploi**
+✅ améliorer le README avec badges GitHub (stars, python version, parquet, etc.)
+
+Veux-tu une version encore plus professionnelle ?
